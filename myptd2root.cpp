@@ -694,9 +694,9 @@ dpp::base_module::process_status MyPTD2Root::process(datatools::things& workItem
 
   if(workItem.has("SD")) {
     const mctools::simulated_data& SD = workItem.get<mctools::simulated_data>("SD");
-    gen_.vertex_x_ = SD.get_vertex().get_x();
-    gen_.vertex_y_ = SD.get_vertex().get_y();
-    gen_.vertex_z_ = SD.get_vertex().get_z();
+    gen_.vertex_x_ = SD.get_vertex().x();
+    gen_.vertex_y_ = SD.get_vertex().y();
+    gen_.vertex_z_ = SD.get_vertex().z();
   }
 
   tree_->Fill();
