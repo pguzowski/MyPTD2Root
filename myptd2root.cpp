@@ -80,6 +80,11 @@ void MyPTD2Root::initialize(const datatools::properties& myConfig,
   tree_->Branch("header.runtype",&header_.runtype_);
   tree_->Branch("header.simulated",&header_.simulated_);
 
+  // generator data
+  tree_->Branch("truth.vetex_x",&gen_.vertex_x_);
+  tree_->Branch("truth.vetex_y",&gen_.vertex_y_);
+  tree_->Branch("truth.vetex_z",&gen_.vertex_z_);
+
   // particle data
   tree_->Branch("particle.nofparticles",&particle_.nofparticles_);
   tree_->Branch("particle.nofgammaonly",&particle_.nofgammas_);
