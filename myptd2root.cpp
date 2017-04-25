@@ -7,6 +7,8 @@
 // Ourselves
 #include "myptd2root.h"
 
+#include <mctools/simulated_data.h>
+
 // Standard Library
 // Third Party
 // - A
@@ -689,6 +691,13 @@ dpp::base_module::process_status MyPTD2Root::process(datatools::things& workItem
       header_.runtype_ = 0;
       header_.simulated_ = (EH.is_simulated () ? true : false);
     }
+
+  if(workItem.has("SD")) {
+    const mctools::simulated_data& SD = workItem.get<mctools::simulated_data>("SD");
+    gen_.vertex_x_ = SD.get_vertex().get_x();
+    gen_.vertex_y_ = SD.get_vertex().get_y();
+    gen_.vertex_z_ = SD.get_vertex().get_z();
+  }
 
   tree_->Fill();
 

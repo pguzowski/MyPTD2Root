@@ -41,6 +41,17 @@ typedef struct HeaderEventStorage{
   bool simulated_;
 } headereventstorage;
 
+typedef struct GeneratorEventStorage {
+  double vertex_x_;
+  double vertex_y_;
+  double vertex_z_;
+  int nofparticles_;
+  std::vector<int>* pdgs_;
+  std::vector<double>* px_;
+  std::vector<double>* py_;
+  std::vector<double>* pz_;
+} generatoreventstorage;
+
 typedef struct ParticleEventStorage{
   int nofparticles_;
   int nofgammas_;
@@ -124,6 +135,7 @@ class MyPTD2Root : public dpp::base_module {
   
   HeaderEventStorage header_;
   ParticleEventStorage particle_;
+  GeneratorEventStorage gen_;
 
   // Macro which automatically creates the interface needed
   // to enable the module to be loaded at runtime
