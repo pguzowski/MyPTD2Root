@@ -55,9 +55,9 @@ def convert(inf, outf):
     ng = array.array('i',[0])
     t.SetBranchAddress('particle.nofparticles',np)
     t.SetBranchAddress('particle.nofgammaonly',ng)
-    tvx = array.array('f',[0.]) # true vertex x
-    tvy = array.array('f',[0.]) # true vertex y
-    tvz = array.array('f',[0.]) # true vertex z
+    tvx = array.array('d',[0.]) # true vertex x
+    tvy = array.array('d',[0.]) # true vertex y
+    tvz = array.array('d',[0.]) # true vertex z
     t.SetBranchAddress('truth.vertex_x',tvx)
     t.SetBranchAddress('truth.vertex_y',tvy)
     t.SetBranchAddress('truth.vertex_z',tvz)
@@ -118,9 +118,9 @@ def convert(inf, outf):
     tout.Branch('q1',fout_q1,'q1/I')
     tout.Branch('q2',fout_q2,'q2/I')
     tout.Branch('qsum',fout_qsum,'qsum/I')
-    tout.Branch('tvx',tvx,'tvx/F')
-    tout.Branch('tvy',tvy,'tvy/F')
-    tout.Branch('tvz',tvz,'tvz/F')
+    tout.Branch('tvx',tvx,'tvx/D')
+    tout.Branch('tvy',tvy,'tvy/D')
+    tout.Branch('tvz',tvz,'tvz/D')
     
     for e in entries:
         t.GetEntry(e)
