@@ -16,6 +16,8 @@ include_directories(${Falaise_INCLUDE_DIRS})
 # Build a dynamic library from our sources
 add_library(MyPTD2Root SHARED myptd2root.h myptd2root.cpp)
 
+target_link_libraries(MyPTD2Root Falaise::FalaiseModule)
+
 # - Don't link directly as Bayeux/Falaise will export the
 #   needed symbols.
 # Ensure dynamic lookup on OS X

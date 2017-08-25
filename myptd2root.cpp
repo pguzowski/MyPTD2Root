@@ -212,12 +212,15 @@ dpp::base_module::process_status MyPTD2Root::process(datatools::things& workItem
   // look for clusters
   if(workItem.has("TCD")) {
     const snemo::datamodel::tracker_clustering_data & TCD = workItem.get<snemo::datamodel::tracker_clustering_data>("TCD");
-    clus_.nclus_ = TCD.get_default_solution().get_clusters().size();
     clus_.nclushits_ = 0;
-    for(const datatools::handle<snemo::datamodel::tracker_cluster>& i : TCD.get_default_solution().get_clusters()) {
-      int nh = i.get().get_number_of_hits();
-      clus_nhits.push_back(nh);
-      clus_.nclushits_ += nh;
+    clus_.nclus_ = 0;
+    if(TCD.has_default_solution()) {
+      clus_.nclus_ = TCD.get_default_solution().get_clusters().size();
+      for(const datatools::handle<snemo::datamodel::tracker_cluster>& i : TCD.get_default_solution().get_clusters()) {
+        int nh = i.get().get_number_of_hits();
+        clus_nhits.push_back(nh);
+        clus_.nclushits_ += nh;
+      }
     }
   }
   else {
