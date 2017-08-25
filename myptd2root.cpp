@@ -52,7 +52,7 @@ void MyPTD2Root::initialize(const datatools::properties& myConfig,
   }
 
   // Look for services
-  if (flServices.has("geometry"));
+  if (flServices.has("geometry"))
   {
     const geomtools::geometry_service& GS = flServices.get<geomtools::geometry_service> ("geometry");
 
@@ -84,6 +84,14 @@ void MyPTD2Root::initialize(const datatools::properties& myConfig,
   tree_->Branch("truth.vertex_x",&gen_.vertex_x_);
   tree_->Branch("truth.vertex_y",&gen_.vertex_y_);
   tree_->Branch("truth.vertex_z",&gen_.vertex_z_);
+  
+  // hit data
+  tree_->Branch("hits.nhits",&hits_.nofhits_);
+
+  // cluster data
+  tree_->Branch("clus.nclus",&clus_.nclus_);
+  tree_->Branch("clus.nclushits",&clus_.nclushits_);
+  tree_->Branch("clus.clus_nhits",&clus_.clus_nhits_);
 
   // particle data
   tree_->Branch("particle.nofparticles",&particle_.nofparticles_);
@@ -187,8 +195,36 @@ dpp::base_module::process_status MyPTD2Root::process(datatools::things& workItem
   std::vector<double> calo2_loc_x;
   std::vector<double> calo2_loc_y;
   std::vector<double> calo2_loc_z;
+  
+  std::vector<int> clus_nhits;
 
   // Access the workItem
+
+  // look for hits
+  if(workItem.has("CD")) {
+    const snemo::datamodel::calibrated_data & CD = workItem.get<snemo::datamodel::calibrated_data>("CD");
+    hits_.nofhits_ = CD.calibrated_tracker_hits().size();
+  }
+  else {
+    hits_.nofhits_ = 0;
+  }
+
+  // look for clusters
+  if(workItem.has("TCD")) {
+    const snemo::datamodel::tracker_clustering_data & TCD = workItem.get<snemo::datamodel::tracker_clustering_data>("TCD");
+    clus_.nclus_ = TCD.get_default_solution().get_clusters().size();
+    clus_.nclushits_ = 0;
+    for(const datatools::handle<snemo::datamodel::tracker_cluster>& i : TCD.get_default_solution().get_clusters()) {
+      int nh = i.get().get_number_of_hits();
+      clus_nhits.push_back(nh);
+      clus_.nclushits_ += nh;
+    }
+  }
+  else {
+    clus_.nclus_ = 0;
+    clus_.nclushits_ = 0;
+  }
+  clus_.clus_nhits_ = &clus_nhits;
 
   // look for reconstructed data
   if(workItem.has("PTD"))
@@ -637,53 +673,53 @@ dpp::base_module::process_status MyPTD2Root::process(datatools::things& workItem
 	particle_.nofgammas_ = 0;
       }
 
-      particle_.particle_id_ = &particleid;
-      particle_.charge_ = &charge;
-      particle_.vertex1_type_ = &vertex1type;
-      particle_.vertex1_x_ = &vertex1_x;
-      particle_.vertex1_y_ = &vertex1_y;
-      particle_.vertex1_z_ = &vertex1_z;
-      particle_.foil1_dir_x_ = &foil1_dir_x;
-      particle_.foil1_dir_y_ = &foil1_dir_y;
-      particle_.foil1_dir_z_ = &foil1_dir_z;
-      particle_.vertex2_type_ = &vertex2type;
-      particle_.vertex2_x_ = &vertex2_x;
-      particle_.vertex2_y_ = &vertex2_y;
-      particle_.vertex2_z_ = &vertex2_z;
-      particle_.foil2_dir_x_ = &foil2_dir_x;
-      particle_.foil2_dir_y_ = &foil2_dir_y;
-      particle_.foil2_dir_z_ = &foil2_dir_z;
-      particle_.traj_length_ = &traj_length;
-      particle_.traj_cluster_delayed_ = &traj_cl_delayed;
-      particle_.traj_cluster_delayed_time_ = &traj_cl_delayed_time;
-      particle_.calo1_associated_ = &calo1associated;
-      particle_.calo1_type_ = &calo1type;
-      particle_.calo1_energy_ = &calo1energy;
-      particle_.calo1_sigma_energy_ = &calo1sigmaenergy;
-      particle_.calo1_time_ = &calo1time;
-      particle_.calo1_sigma_time_ = &calo1sigmatime;
-      particle_.calo1_side_ = &calo1side;
-      particle_.calo1_column_ = &calo1column;
-      particle_.calo1_row_ = &calo1row;
-      particle_.calo1_wall_ = &calo1wall;
-      particle_.calo1_loc_x_ = &calo1_loc_x;
-      particle_.calo1_loc_y_ = &calo1_loc_y;
-      particle_.calo1_loc_z_ = &calo1_loc_z;
-      particle_.calo2_associated_ = &calo2associated;
-      particle_.calo2_type_ = &calo2type;
-      particle_.calo2_energy_ = &calo2energy;
-      particle_.calo2_sigma_energy_ = &calo2sigmaenergy;
-      particle_.calo2_time_ = &calo2time;
-      particle_.calo2_sigma_time_ = &calo2sigmatime;
-      particle_.calo2_side_ = &calo2side;
-      particle_.calo2_column_ = &calo2column;
-      particle_.calo2_row_ = &calo2row;
-      particle_.calo2_wall_ = &calo2wall;
-      particle_.calo2_loc_x_ = &calo2_loc_x;
-      particle_.calo2_loc_y_ = &calo2_loc_y;
-      particle_.calo2_loc_z_ = &calo2_loc_z;
-
     }
+  
+  particle_.particle_id_ = &particleid;
+  particle_.charge_ = &charge;
+  particle_.vertex1_type_ = &vertex1type;
+  particle_.vertex1_x_ = &vertex1_x;
+  particle_.vertex1_y_ = &vertex1_y;
+  particle_.vertex1_z_ = &vertex1_z;
+  particle_.foil1_dir_x_ = &foil1_dir_x;
+  particle_.foil1_dir_y_ = &foil1_dir_y;
+  particle_.foil1_dir_z_ = &foil1_dir_z;
+  particle_.vertex2_type_ = &vertex2type;
+  particle_.vertex2_x_ = &vertex2_x;
+  particle_.vertex2_y_ = &vertex2_y;
+  particle_.vertex2_z_ = &vertex2_z;
+  particle_.foil2_dir_x_ = &foil2_dir_x;
+  particle_.foil2_dir_y_ = &foil2_dir_y;
+  particle_.foil2_dir_z_ = &foil2_dir_z;
+  particle_.traj_length_ = &traj_length;
+  particle_.traj_cluster_delayed_ = &traj_cl_delayed;
+  particle_.traj_cluster_delayed_time_ = &traj_cl_delayed_time;
+  particle_.calo1_associated_ = &calo1associated;
+  particle_.calo1_type_ = &calo1type;
+  particle_.calo1_energy_ = &calo1energy;
+  particle_.calo1_sigma_energy_ = &calo1sigmaenergy;
+  particle_.calo1_time_ = &calo1time;
+  particle_.calo1_sigma_time_ = &calo1sigmatime;
+  particle_.calo1_side_ = &calo1side;
+  particle_.calo1_column_ = &calo1column;
+  particle_.calo1_row_ = &calo1row;
+  particle_.calo1_wall_ = &calo1wall;
+  particle_.calo1_loc_x_ = &calo1_loc_x;
+  particle_.calo1_loc_y_ = &calo1_loc_y;
+  particle_.calo1_loc_z_ = &calo1_loc_z;
+  particle_.calo2_associated_ = &calo2associated;
+  particle_.calo2_type_ = &calo2type;
+  particle_.calo2_energy_ = &calo2energy;
+  particle_.calo2_sigma_energy_ = &calo2sigmaenergy;
+  particle_.calo2_time_ = &calo2time;
+  particle_.calo2_sigma_time_ = &calo2sigmatime;
+  particle_.calo2_side_ = &calo2side;
+  particle_.calo2_column_ = &calo2column;
+  particle_.calo2_row_ = &calo2row;
+  particle_.calo2_wall_ = &calo2wall;
+  particle_.calo2_loc_x_ = &calo2_loc_x;
+  particle_.calo2_loc_y_ = &calo2_loc_y;
+  particle_.calo2_loc_z_ = &calo2_loc_z;
 
   // look for event header
   if(workItem.has("EH"))

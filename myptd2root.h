@@ -27,6 +27,8 @@
 #include "falaise/snemo/datamodels/particle_track_data.h"
 #include "falaise/snemo/datamodels/particle_track.h"
 #include "falaise/snemo/datamodels/calibrated_calorimeter_hit.h"
+#include "falaise/snemo/datamodels/calibrated_data.h"
+#include "falaise/snemo/datamodels/tracker_clustering_data.h"
 #include "falaise/snemo/datamodels/base_trajectory_pattern.h"
 #include "falaise/snemo/datamodels/event_header.h"
 
@@ -51,6 +53,16 @@ typedef struct GeneratorEventStorage {
   std::vector<double>* py_;
   std::vector<double>* pz_;
 } generatoreventstorage;
+
+typedef struct HitEventStorage {
+  int nofhits_;
+} hiteventstorage;
+
+typedef struct ClusterEventStorage {
+  int nclus_;
+  int nclushits_;
+  std::vector<int>* clus_nhits_;
+} clustereventstorage;
 
 typedef struct ParticleEventStorage{
   int nofparticles_;
@@ -136,6 +148,8 @@ class MyPTD2Root : public dpp::base_module {
   HeaderEventStorage header_;
   ParticleEventStorage particle_;
   GeneratorEventStorage gen_;
+  HitEventStorage hits_;
+  ClusterEventStorage clus_;
 
   // Macro which automatically creates the interface needed
   // to enable the module to be loaded at runtime
